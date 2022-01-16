@@ -27,8 +27,9 @@
 
     git でブランチ名が出てないと不安になるので、ブランチ名を出すためのスクリプトを公式より入手します。  
 
-    cd ~ && curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ".git-prompt.sh" && chmod +x .git-prompt.sh  
-
+```sh
+cd ~ && curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ".git-prompt.sh" && chmod +x .git-prompt.sh  
+```
     配置はこれで完了です。  
 
 ### Powerline Glyph を表示するフォントの準備
@@ -48,7 +49,7 @@
     変更するのは「.bashrc」です。  
     結論から先に書くと、以下記載の修正後のような記述にすればResultのようなナウでヤングな見た目になります。  
 
-    修正前
+##### 修正前
 ```sh
 if [ "$color_prompt" = yes ]; then  
    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '  
