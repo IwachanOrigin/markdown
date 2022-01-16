@@ -49,14 +49,14 @@
     結論から先に書くと、以下記載の修正後のような記述にすればResultのようなナウでヤングな見た目になります。  
 
     修正前
-    ```sh
-    if [ "$color_prompt" = yes ]; then  
-       PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '  
-    else  
-       PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '  
-    fi  
-    unset color_prompt force_color_prompt
-    ```
+```sh
+if [ "$color_prompt" = yes ]; then  
+   PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '  
+else  
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '  
+fi  
+unset color_prompt force_color_prompt
+```
 
     修正後  
     #  
