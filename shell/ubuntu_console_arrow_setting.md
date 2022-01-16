@@ -61,17 +61,17 @@ unset color_prompt force_color_prompt
 
 ##### 修正後
 ```sh
-    #  
-    source ~/.git-prompt.sh  
-    if [ "$color_prompt" = yes ]; then  
-        #    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '  
-        #(文字黒/背景灰色)日時 (文字灰色/背景水色) (文字黒)ディレクトリフルパス(文字水色/背景色デフォルト) ()  
-        PS1='\[\e[30;47m\]\D{%y/%m/%d %H:%M:%S}\[\e[37;46m\]\[\e[30m\]\w\[\e[36;41m\]\[\e[0m\]$(__git_ps1 "\[\e[30;41m\](%s)")\[\e[31;49m\]\[\e[0m\] '  
-    else  
-        #PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '  
-        PS1='\[\e[30;47m\]\D{%y/%m/%d %H:%M:%S}\[\e[37;46m\]\[\e[30m\]\w\[\e[36;41m\]\[\e[0m\]$(__git_ps1 "\[\e[30;41m\](%s)")\[\e[31;49m\]\[\e[0m\] '  
-    fi  
-    unset color_prompt force_color_prompt  
+#  
+source ~/.git-prompt.sh  
+if [ "$color_prompt" = yes ]; then  
+    #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '  
+    #(文字黒/背景灰色)日時 (文字灰色/背景水色) (文字黒)ディレクトリフルパス(文字水色/背景色デフォルト) ()  
+    PS1='\[\e[30;47m\]\D{%y/%m/%d %H:%M:%S}\[\e[37;46m\]\[\e[30m\]\w\[\e[36;41m\]\[\e[0m\]$(__git_ps1 "\[\e[30;41m\](%s)")\[\e[31;49m\]\[\e[0m\] '  
+else  
+    #PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '  
+    PS1='\[\e[30;47m\]\D{%y/%m/%d %H:%M:%S}\[\e[37;46m\]\[\e[30m\]\w\[\e[36;41m\]\[\e[0m\]$(__git_ps1 "\[\e[30;41m\](%s)")\[\e[31;49m\]\[\e[0m\] '  
+fi  
+unset color_prompt force_color_prompt  
 ```
     「.bashrc」の59行目あたりでしょうか。  
     表示部分を謎の呪文で書き換えていますね。  
@@ -83,7 +83,7 @@ unset color_prompt force_color_prompt
      つまりこいつをぐしゃぐしゃにしてしまえば表示内容もぐしゃぐしゃになるということですね。  
      コンソール上で  
 ```sh
-     export PS1='Hello Prompt! '  
+export PS1='Hello Prompt! '  
 ```
      と試しに入力して実行すると表示が変わります。  
      こいつがすべての秘密結社を操る大首領だとわかります。  
@@ -122,7 +122,7 @@ unset color_prompt force_color_prompt
      参考ページによると、'\[' と '\]' で囲まなくても加工自体は出来るそうですが、操作を行った際に表示がおかしくなることがあるのできちんと囲むのが吉です。  
      '\e[' はASCIIのエスケープ文字を使うことを宣言する特殊文字です。この後ろに装飾パターン文字列を記載することで設定できます。  
 ```sh
-     PS1='\[\e[1m\] 太字 \[\e[0m\] 普通'  
+PS1='\[\e[1m\] 太字 \[\e[0m\] 普通'  
 ```
      上述例では '1m' を指定することで「太字」にしています。  
      その後ろで '0m' を指定することで「普通」にしています。  
@@ -144,7 +144,7 @@ unset color_prompt force_color_prompt
 
      文字の色や背景色を変更します。  
 ```sh
-     PS1='\[\e[31m\] 文字色赤 \[\e[0m\] 何もなし  \[\e[41m\] 背景色赤 \[\e[0m\] 何もなし'  
+PS1='\[\e[31m\] 文字色赤 \[\e[0m\] 何もなし  \[\e[41m\] 背景色赤 \[\e[0m\] 何もなし'  
 ```
      この例では文字色赤・背景色赤を試しています。  
      どうやら、「文字色」を変更後に「背景色」を変更した場合、文字色は前の設定を引き継いでしまうようです。  
@@ -189,7 +189,7 @@ unset color_prompt force_color_prompt
      ということでまとめて設定するのですが、この場合に使用するのは「;」です。  
      装飾設定を「;」で区切ることで上手に設定が出来ます。  
 ```sh
-     PS1='装飾無し \[\e[1;37;42m\] 太字、文字白、背景緑 \[\e[0m\] 装飾無し'  
+PS1='装飾無し \[\e[1;37;42m\] 太字、文字白、背景緑 \[\e[0m\] 装飾無し'  
 ```
      '1m', '37m', '42m' を「;」で区切ることで一気に設定しているわけです。  
      この時、最後の装飾値のみに「m」が必要で、その前の装飾値の「m」は省略できます。  
@@ -202,7 +202,7 @@ unset color_prompt force_color_prompt
 
 ### 参考ページ
 
-    [Qiitaのページ](https://qiita.com/hmmrjn/items/60d2a64c9e5bf7c0fe60)  
+    [Qiitaのページ](https://qiita.com/hmmrjn/items/60d2a64c9e5bf7c0fe60)
     
 ### 終わり
 
