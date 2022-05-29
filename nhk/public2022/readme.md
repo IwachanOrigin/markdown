@@ -3,5 +3,5 @@
 
 ## 目次
 
-    [展示1](/exhibition_1.md)
+[展示1](/exhibition_1.md)
 
