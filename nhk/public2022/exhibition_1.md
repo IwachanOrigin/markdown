@@ -3,7 +3,8 @@
 
 ## 研究目的
     放送受信機能やインターネット接続の有無など、デバイスに依存した機能に依らず、同じように放送サービスを便利に楽しむことができるようにするための研究。  
-    ![figure1](https://user-images.githubusercontent.com/12496951/170852886-db1ab38a-d2cd-486b-b6c4-bda5cf7100ee.jpg)  
+
+![figure1](https://user-images.githubusercontent.com/12496951/170852886-db1ab38a-d2cd-486b-b6c4-bda5cf7100ee.jpg)  
 
 ## 出来ていること
     マルチプラットフォームでの放送・インターネット配信の視聴。  
