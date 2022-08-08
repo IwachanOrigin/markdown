@@ -41,9 +41,11 @@
 
     こちらのリポジトリは「Qt Creator」をインストールし、Qt for Androidの設定を行った際にダウンロード・インストールされるようです。  
     Qt for Androidセットアップ時に以下のような設定を行ったと思います。  
-    1. Qt Creator Menu > Edit > Preferrence > Devices へアクセスする。  
+    1. Qt Creator Menu > Edit > Preferences... > Devices へアクセスする。  
     2. Android OpenSSL settings (Optional) でエラーが出ているので[Download OpenSSL]などでダウンロードを行う。  
     3. [OpenSSL Settings are OK.]が出ていることを確認する。  
+
+![qt_openssl](https://user-images.githubusercontent.com/12496951/183339957-9082b220-88ff-4a18-b851-323df2508b05.PNG)
 
     この時、Qt Creator は上述リポジトリから対象のフォルダへビルド済みのOpenSSLをダウンロードするのだと思います。  
     もし、まだOpenSSLがダウンロードされていなかったりエラーが解消されていない場合、こちらを先に解消してください。  
@@ -65,11 +67,14 @@
        私は7zip野郎なので7zipで解凍します。  
        以下っぽい感じのディレクトリ構成になっていると思います。  
 
+![qt_openssl2](https://user-images.githubusercontent.com/12496951/183340003-221efb84-48c1-4e96-ab06-98102e2337e7.PNG)
+
     3. ビルド
        今回はCMakeLists.txtは作らず、己が力でビルドします。  
        libssh-0.9.6フォルダ内でコマンドプロンプトを起動し、buildフォルダを作成後、移動します。  
-       
-       
+
+![qt_openssl3](https://user-images.githubusercontent.com/12496951/183340068-3c3926b2-d92b-40a1-823f-0aa5ae6d11b1.PNG)
+
        要所要所をご自身の環境に合わせて設定し、実行します。  
 
 ``` cmake
@@ -115,7 +120,7 @@ ninja -j4 && ninja install
 ```
 
       以下画像のようになったら良さげです。  
-      
+![qt_openssl5](https://user-images.githubusercontent.com/12496951/183340149-7647061d-2217-43ec-ada3-13f4d1c00f0f.PNG)
 
     4. LINK
        
