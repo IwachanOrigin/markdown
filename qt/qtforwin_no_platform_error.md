@@ -35,14 +35,15 @@
 
     手っ取り早いのは「windeployqt.exe」を使ってコピーしてもらう方法です。  
     widgetsを利用している場合は以下のコマンドを使用します。  
-'''Batchfile
-%QTDIR%/bin/windeployqt.exe [exe file]
-'''
 
+``` Batchfile
+%QTDIR%/bin/windeployqt.exe [exe file]
+```
     QMLを利用している場合は以下のコマンドを使用します。  
-'''Batchfile
+
+```Batchfile
 %QTDIR%/bin/windeployqt.exe --qmldir %QTDIR%/qml [exe file]
-'''
+```
 
     コマンドが正常に終了すれば、指定したExeファイルと同じ階層に必要そうなディレクトリやdllなどを全てコピーしてくれます。  
     ただし、あまりにも量が多かったり、実際にはいらないだろうファイルもコピーされます。  
