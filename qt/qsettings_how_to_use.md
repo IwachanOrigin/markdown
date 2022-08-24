@@ -10,7 +10,7 @@
 ## まず最初に読むもの
 
     公式のドキュメントを読む。  
-(Qt5-QSettings)[https://doc.qt.io/qt-5/qsettings.html]
+[Qt5-QSettings](https://doc.qt.io/qt-5/qsettings.html)
 
     上記のURLはQt5のもの。Qt6以上の場合は注意。  
 
