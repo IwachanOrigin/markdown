@@ -39,3 +39,6 @@
 | 4 | public String changeText(String tex) {}  | (Ljava/lang/String;)Ljava/lang/String; |
 | 5 | public String concat(String tex1, String tex2) {}  | (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;  |
 
+## 困ったときは
+
+    Android公式とQt公式のドキュメントを読みましょう。  
