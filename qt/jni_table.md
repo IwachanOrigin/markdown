@@ -31,11 +31,11 @@
 
     Javaコードと対比させた場合のメソッドのシグニチャー例を記載します。  
     
-    | No.  | java | メソッドのシグニチャー |
-    |:--|:--|:--|
-    | 1 | public void func() {}  | ()V  |
-    | 2 | public int getValue() {}  | ()I  |
-    | 3 | public void setValue(int value) {}  | (I)V  |
-    | 4 | public String changeText(String tex) {}  | (Ljava/lang/String;)Ljava/lang/String; |
-    | 5 | public String concat(String tex1, String tex2) {}  | (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;  |
-    
+| No.  | java | メソッドのシグニチャー |
+|:--|:--|:--|
+| 1 | public void func() {}  | ()V  |
+| 2 | public int getValue() {}  | ()I  |
+| 3 | public void setValue(int value) {}  | (I)V  |
+| 4 | public String changeText(String tex) {}  | (Ljava/lang/String;)Ljava/lang/String; |
+| 5 | public String concat(String tex1, String tex2) {}  | (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;  |
+
