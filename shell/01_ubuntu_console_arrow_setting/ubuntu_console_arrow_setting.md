@@ -43,6 +43,15 @@ cd ~ && curl https://raw.githubusercontent.com/git/git/master/contrib/completion
     ダウンロードするといっぱいファイルが見つかりますが、以下を入れておけばここでやりたいことは満たせます。  
     <任意ディレクトリ>/CascadiaCode-xxxx.xx/ttf/CascadiaCodePL.ttf  
 
+
+### Windows Terminalでの設定
+
+    インストールしたフォントをWindows Terminalの画面で使用するように設定を変更します。  
+    [設定] > [プロファイル] > [既定値] > [フォント フェイス] と進み、「Cascade Code PL」を選択し、右下の[保存]を押下します。  
+    既定値を変更しても変わらない場合、変更されたいプログラム(Ubuntuなど)の設定も一緒に変更します。  
+    Ubuntuの場合、[追加の設定] > [外観] と移動することでフォントの設定が表示されます。  
+
+
 ### bashrc の修正
 
     ここから見た目の変更を行っていきます。  
