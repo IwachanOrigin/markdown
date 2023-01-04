@@ -42,20 +42,22 @@
     ということで、デバッグコードを仕込んでProcessIDを調べていきました。  
     CreateProcess関数で作成されたProcessIDを出力した後、Windows上で動いているすべてのウィンドウ情報を取得し、chrome.exeでフィルタしました。  
     この確認を行う際、chrome.exeのプロセスは1つも無い状態にしました。  
-> 1つ目  
+    1つ目  
 > process id = (18216)  
 > chrome.exe (18216)  
 > chrome.exe (18216)  
 > chrome.exe (22896)  
+
     あーいるいる。2つ存在するのは謎ですが、今はそこは問題ではありません。  
     では2つ目を起動します。  
     
-> 2つ目  
+    2つ目  
 > process id = (29432)  
 > chrome.exe (18216)  
 > chrome.exe (22896)  
 > chrome.exe (18216)  
 > chrome.exe (22896)  
+
     29432、いないですねぇ。  
     いないもの...Another...夜見山北中...私は赤沢さん、好きです。  
     
@@ -71,6 +73,7 @@
 [CreateProcess returns handle different than launched Chrome.exe](https://stackoverflow.com/questions/54644803/createprocess-returns-handle-different-than-launched-chrome-exe)  
 
 > The Chrome process you are spawning with CreateProcess() is, in turn, spawning its own child process(es) and then terminating itself.  
+    
     なるほど！ でもそれだと私、困る！  
 
     ここからは推測ですが、モダンなブラウザはCreateProcess関数で作成した場合でも一つのプロセスIDに収束するような処理をやってるんじゃないかなと思います。  
@@ -80,6 +83,7 @@
     回答者さんはこのようなアドバイスをくれてました。  
     
 > You can get notified about the child PID(s) that Chrome itself spawns.  
+
     つまり、子プロセスの情報を手に入れるしか無いってことですね。  
     そして、私はまた辿り着いたわけです。Raymond Chen氏のブログ「The Old New Thing」に。  
 
