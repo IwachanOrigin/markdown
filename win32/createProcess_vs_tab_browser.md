@@ -87,6 +87,7 @@
 
     つまり、子プロセスの情報を手に入れるしか無いってことですね。  
     そして、私はまた辿り着いたわけです。Raymond Chen氏のブログ「The Old New Thing」に。  
+[How do I wait until all processes in a job have exited?](https://devblogs.microsoft.com/oldnewthing/20130405-00/?p=4743)  
 
 ## 更新したら書く
 
