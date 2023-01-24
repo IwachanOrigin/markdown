@@ -9,7 +9,7 @@
 ## Environment
 
     OS: Windows 10  
-    ブラウザ: Microsoft Edge  
+    ブラウザ: Microsoft Edge, Google Chrome  
 
 ## How to use
 
