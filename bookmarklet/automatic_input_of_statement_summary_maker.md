@@ -11,6 +11,10 @@
     OS: Windows 10  
     ブラウザ: Microsoft Edge, Google Chrome  
 
+## Demo
+
+![demo](https://user-images.githubusercontent.com/12496951/214334247-c281e22f-7a88-4c36-944c-64e46d03bb52.gif)
+
 ## How to use
 
     以下のコードをワンラインにしてご使用ください。  
@@ -18,15 +22,15 @@
 ``` javascript
 javascript:(
   function(){
-    var ret=prompt("A,B,C...", "良いです良いです,なんなんやーっ！");
+    let ret=prompt("A,B,C...", "良いです良いです,なんなんやーっ！");
     let tags=ret.split(',');
-    for (var i=0;i<tags.length;i++)
+    for (let i=0;i<tags.length;i++)
     {
       document.getElementsByClassName('MuiButtonBase-root MuiFab-root MuiFab-circular MuiFab-sizeMedium MuiFab-primary css-15w7hv2-MuiButtonBase-root-MuiFab-root')[0].click();
     }
     let cnt=0;
     let inputs = document.getElementsByClassName('MuiInput-input MuiInputBase-input MuiInputBase-inputMultiline css-66dh3a-MuiInputBase-input-MuiInput-input');
-    for(var i=0;i<inputs.length;i++)
+    for(let i=0;i<inputs.length;i++)
     {
       let input = inputs[i];
       if(input.getAttribute("aria-invalid"))
