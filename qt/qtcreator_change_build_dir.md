@@ -24,6 +24,7 @@
 
 上述の設定を反映した場合は、以下のツリー構造になります。  
 
+<pre>  
 ProjectDirectory  
     └---build  
         ├---Debug  
@@ -31,6 +32,7 @@ ProjectDirectory
         │  
         └---Release  
              └---xx.exe  
+</pre>  
 
 ## NOTE
 
