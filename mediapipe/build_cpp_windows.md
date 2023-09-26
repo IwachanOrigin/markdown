@@ -25,6 +25,11 @@ Bazel : 6.3.2
 
 ## NOTE 2
 
+公式のトラブルシューティングも参照ください。  
+[https://developers.google.com/mediapipe/framework/getting_started/troubleshooting.md](https://developers.google.com/mediapipe/framework/getting_started/troubleshooting.md)  
+
+## NOTE 3
+
 このビルド方法は 2023/09/26 時点で成功した方法です。  
 
 ## Step
