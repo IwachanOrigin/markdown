@@ -132,23 +132,33 @@ Visual Studio Build Toolsまでのパスです。
 
 BAZEL_VC  
 Visual Studio VC までのパスです。  
+もし、Visual Studio Build Toolsのみのインストールでチャレンジする場合、Build ToolsのVCフォルダを設定します。  
+その場合、以下のようになります。  
+
+    set BAZEL_VC=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC
 
 BAZEL_VC_FULL_VERSION  
-Visual Studio のバージョンを記載します。  
+Visual Studio VC のバージョンを記載します。  
+この値はオプションのようです。未指定の場合、最新のものを勝手に使用してくれます。  
 2022の場合、以下のパスにバージョンが記載されたフォルダがありますので、そちらを利用しました。  
 
     C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC
 
 ここでは「14.37.32822」とします。  
+また、ここのバージョンが間違っていると、Bazelはcl.exeなどを見つけることが出来ず、永遠にエラーを吐き続けます。  
+全く気が利かない糞ツールです。  
 
 BAZEL_WINSDK_FULL_VERSION  
 Windows SDK のバージョンを記載します。  
+この値はオプションのようです。未指定の場合、最新のものを勝手に使用してくれます。  
 Visual Studio をインストールした際、一緒にインストールされるのでそちらを利用します。  
 以下パスにインストールされているバージョンを使用しました。  
 
     C:\Program Files (x86)\Windows Kits\10\Lib
 
 ここでは、「10.0.22621.0」とします。  
+まだ間違えたことはありませんが、ここのバージョンが間違っていると、Bazelは狂うはずです。  
+なぜなら、そういうツールだからです。くそ。  
 
 BAZEL_SH  
 WSLをインストールして利用されている場合、この値を設定しないとPythonを見つけることが出来ません。  
@@ -158,6 +168,9 @@ BAZELで利用するbash.exeのパスを指定します。
     C:\software\msys64\usr\bin\bash.exe
 
 この設定を行わない場合、WSL側のbash.exeが起動してしまいます。  
+この時、気を利かせてダブルクオーテーションでパスを括ってしまうとエラーが発生し、まともに動かなくなります。  
+どうやら、内部でも気を利かせてダブルクオーテーションで括ってくれているため、二重に括ることになります。  
+結果、Pythonのプロセス起動関数が実行に失敗します。  
 
 ### Step8 : MediaPipe をダウンロード
 
