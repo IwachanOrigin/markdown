@@ -119,6 +119,8 @@ I0000 00:00:1695969788.883797   26544 demo_run_graph_main.cc:60] Initialize the 
 そこからさらに30秒～60秒待つと接続されているカメラデバイスの0番目をキャプチャして解析を行います。  
 起動までの動画を撮影しましたが、1分30秒程度掛かります。  
 
+![handtracking_cpu_run](./handtracking_cpu_run.mp4)
+
 
 ### Appendex : rectangle.h の名前衝突によるビルドエラー
 
