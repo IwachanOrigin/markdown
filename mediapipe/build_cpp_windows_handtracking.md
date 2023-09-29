@@ -118,14 +118,12 @@ I0000 00:00:1695969788.883797   26544 demo_run_graph_main.cc:60] Initialize the 
 待っていると「MediaPipe」というOpenCVウィンドウが表示されます。  
 そこからさらに30秒～60秒待つと接続されているカメラデバイスの0番目をキャプチャして解析を行います。  
 起動までの動画を撮影しましたが、1分30秒程度掛かります。  
-
-<div><video controls src="./handtracking_cpu_run.mp4" muted="true"></video></div>
-
+./handtracking_cpu_run.mp4 をご確認ください。  
 
 ### Appendex : rectangle.h の名前衝突によるビルドエラー
 
 2023/09/26時点での最新をクローンすると、Windowsの場合、rectangle.h が WinGDI.h の Rectangle関数と衝突してしまいます。  
-(0.10.5 だと起きませんでした。何故...？)  
+(v0.10.5 だと起きませんでした。何故...？)  
 
 この場合、以下のファイルへnamespaceを付与する必要があります。  
 <path/to/mediapipe>/mediapipe/framework/deps/rectangle.h  
@@ -156,6 +154,6 @@ float CalculateIou(const mediapipe::Rectangle_f& rect1, const mediapipe::Rectang
 
 #define NOGDI も試しましたが、私の環境では意味がありませんでした。  
 この方法で2023/09/26時点で最新だったバージョンではビルドが通りました。  
-その後でダウンロードしていたv0.10.5のビルドを試して、このエラーが出ませんでした。  
+その後でダウンロードしていたv0.10.5でビルドを試しましたがこのエラーは発生しませんでした。  
 
 
