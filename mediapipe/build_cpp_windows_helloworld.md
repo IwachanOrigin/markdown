@@ -117,12 +117,13 @@ githubのページですので、latest をダウンロードしましょう。
 
 BazelでVisual Studioのコンパイラを使うには環境変数を設定する必要があります。  
 5つ程、追加します。  
+「BAZEL_VC_FULL_VERSION」と「BAZEL_WINSDK_FULL_VERSION」はオプションですので必須パラメータではありません。  
 
     set BAZEL_VS=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools
     set BAZEL_VC=C:\Program Files\Microsoft Visual Studio\2022\Professional\VC
+    set BAZEL_SH=C:\software\msys64\usr\bin\bash.exe
     set BAZEL_VC_FULL_VERSION=14.37.32822
     set BAZEL_WINSDK_FULL_VERSION=10.0.22621.0
-    set BAZEL_SH=C:\software\msys64\usr\bin\bash.exe
 
 これは、Visual Studio 2022 Professional をデフォルトでインストールした場合のパスとなります。  
 環境変数について簡単に説明します。  
