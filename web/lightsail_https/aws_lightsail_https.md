@@ -32,6 +32,27 @@
 
 ![lightsail_createinstance_1.png](./images/lightsail_createinstance_1.png)  
 
+3. インスタンスイメージを設定します。プラットフォーム、設計図の選択は図のように選択します。  
+
+![lightsail_createinstance_2.png](./images/lightsail_createinstance_2.png)  
+
+4. オプションは特に設定を行いません。  
+
+![lightsail_createinstance_3.png](./images/lightsail_createinstance_3.png)  
+
+5. プランの選択です。ここでは最も安いプランを選択します。  
+
+![lightsail_createinstance_4.png](./images/lightsail_createinstance_4.png)  
+
+6. インスタンス名を設定します。一意でわかりやすい名前にしましょう。ここではデフォルト名のままにしています。  
+
+![lightsail_createinstance_5.png](./images/lightsail_createinstance_5.png)  
+
+7. 無事、インスタンスが作成されました。黒塗りつぶし箇所はIPアドレスが表示されます。  
+
+![lightsail_createinstance_6.png](./images/lightsail_createinstance_6.png)  
+
+
 ### Create static ip
 
 
