@@ -24,6 +24,13 @@
 
 ### Create instance
 
+1. ホーム画面にアクセスし、「インスタンスの作成」を選択します。  
+
+![lightsail_home.png](./images/lightsail_home.png)  
+
+2. リージョンを作成する場所を選択します。金額には影響が無いようなので、「東京」を選択します。  
+
+![lightsail_createinstance_1.png](./images/lightsail_createinstance_1.png)  
 
 ### Create static ip
 
