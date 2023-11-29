@@ -55,6 +55,22 @@
 
 ### Create static ip
 
+1. 作成したインスタンスを選択します。今のままではサーバーが再起動するたびにIPアドレスが変わってしまいます。  
+なので、静的IPアドレスを割り当てます。アタッチしていない静的IPアドレスはお金が発生しますので気を付けてください。  
+作成したインスタンスを選択すると、SSHでの接続方法などが表示されます。その画面の「ネットワーキング」を開きます。  
+現在のIPアドレスが表示されたページへ遷移します。同画面の「静的IPをアタッチする」を選択します。  
+
+![lightsail_static_ip_1.png](./images/lightsail_static_ip_1.png)  
+
+2. 静的IPの名前を設定します。管理しやすい名前を付けましょう。入力したら、「作成およびアタッチ」を選択します。  
+
+![lightsail_static_ip_2.png](./images/lightsail_static_ip_2.png)  
+
+3. 無事、作成されました。「続行する」で作業を続けます。
+
+![lightsail_static_ip_3.png](./images/lightsail_static_ip_3.png)  
+
+
 
 ### Add firewall config
 
