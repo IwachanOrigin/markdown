@@ -71,8 +71,21 @@
 ![lightsail_static_ip_3.png](./images/lightsail_static_ip_3.png)  
 
 
-
 ### Add firewall config
+
+1. 「ネットワーキング」の画面では、静的IP設定以外にもファイアーウォールの設定を行うことも可能です。  
+HTTPS通信を行う際、任意のポートを指定する場合は設定が必要になります。  
+ここでは、「8443」を利用する設定を行います。  
+「ルールの追加」を選択します。  
+
+![lightsail_firewall_config_1.png](./images/lightsail_firewall_config_1.png)  
+
+2. アプリケーション、プロトコル、ポートまたは範囲に入力します。  
+出来たら「作成」を選択します。  
+接続可能なIPアドレスの制限などが必要な場合、「IPアドレスに制限する」のチェックを付与します。  
+設定項目が新たに表示されます。  
+
+![lightsail_firewall_config_2.png](./images/lightsail_firewall_config_2.png)  
 
 
 ### Create distribution
