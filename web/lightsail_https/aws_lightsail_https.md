@@ -90,6 +90,34 @@ HTTPS通信を行う際、任意のポートを指定する場合は設定が必
 
 ### Create distribution
 
+1. ディストリビューションを作成します。私の理解では、コンテンツ表示が高速化するものだと思っています。  
+画面左のメニューから「ネットワーキング」を選択します。  
+
+![lightsail_networking.png](./images/lightsail_networking.png)  
+
+2. 「ディストリビューションを作成する」を選択します。
+
+![lightsail_distribution_1.png](./images/lightsail_distribution_1.png)  
+
+3. オリジンの選択では、インスタンスと静的IPを選択します。ここでは先ほど作成した「Ubuntu-1」を選択します。  
+表示されない場合、リージョンが異なる場所に割り当たっている可能性もあるので、東京を選択しましょう。  
+
+![lightsail_distribution_2.png](./images/lightsail_distribution_2.png)  
+![lightsail_distribution_3.png](./images/lightsail_distribution_3.png)  
+
+4. キャッシュ動作には「静的コンテンツに最適」を選択します。
+
+![lightsail_distribution_4.png](./images/lightsail_distribution_4.png)  
+
+5. ディストリビューションのプランを選択します。一番安いので行きます。  
+
+![lightsail_distribution_5.png](./images/lightsail_distribution_5.png)  
+
+6. ディストリビューションの識別名を登録します。わかりやすい名前にしましょう。  
+入力したら「ディストリビューションを作成する」を選択します。  
+
+![lightsail_distribution_6.png](./images/lightsail_distribution_6.png)  
+
 
 ## お名前どっとこむ
 
