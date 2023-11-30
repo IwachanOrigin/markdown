@@ -70,6 +70,8 @@
 
 ![lightsail_static_ip_3.png](./images/lightsail_static_ip_3.png)  
 
+取得した静的IPアドレスは、お名前どっとこむのDNS設定で入力が必要になります。  
+
 
 ### Add firewall config
 
@@ -121,10 +123,48 @@ HTTPS通信を行う際、任意のポートを指定する場合は設定が必
 
 ## お名前どっとこむ
 
+ここからはお名前どっとこむでのドメイン関連を設定する方法について記載します。  
+ドメインは取得済みとして作業しています。  
+
 ### DNS setting
 
+1. お名前どっとこむの管理ページへログインします。  
+通常、ドメインのページが表示されますので、その隣の「ネームサーバーの設定」を選択します。
+リストが表示されるので、「ドメインのDNS設定」を選択します。
 
-## Lightsail(ssh setting)
+![lightsail_onamae_1.png](./images/lightsail_onamae_1.png)  
+![lightsail_onamae_2.png](./images/lightsail_onamae_2.png)  
+
+2. ドメイン設定画面が表示されます。対象のドメインのラジオボタンを選択したら「次へ」で進みます。  
+
+![lightsail_onamae_3.png](./images/lightsail_onamae_3.png)  
+
+3. DNS設定にて「DNSレコード設定を利用する」を設定しますので「設定する」を選択します。  
+
+![lightsail_onamae_4.png](./images/lightsail_onamae_4.png)  
+
+4. 入力エリアが現れます。  
+ホスト名には一意な識別文字列を入力します。  
+VALUEにはLightSailの静的IP設定にて取得したIPアドレスを入力します。  
+その他はデフォルトで良いです。  
+登録出来たら「追加」で進めてます。  
+
+![lightsail_onamae_5.png](./images/lightsail_onamae_5.png)  
+
+5. 追加が正常に終了したら、DNS Lookupサイトなどで反映されているかを確認します。  
+こういうサイトです。  
+[https://www.cman.jp/network/support/nslookup.html](https://www.cman.jp/network/support/nslookup.html)
+
+ここで入力するホスト名は、取得したドメインになるので注意してください。  
+先ほど入力した、一意なホスト名も含めたURLではありません。  
+nslookupが成功したら正しく反映されています。  
+お名前どっとこむのサイト上にも記載がありますが、反映に時間を要する場合がありますのでご注意ください。  
+
+
+## Lightsail(ssl setting)
+
+ドメインと静的IPアドレスの紐づけが出来たので、SSLの設定を行います。  
+ここではLet's Encryptを用いて証明書を発行、使用します。  
 
 ### Install web server(ex. apache2)
 
