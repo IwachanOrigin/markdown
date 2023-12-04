@@ -168,11 +168,97 @@ nslookupが成功したら正しく反映されています。
 
 ### Install web server(ex. apache2)
 
+「apache2 インストール」などの文字で検索したらいっぱい出てきます。  
+そのため、大体こんな感じの手順を記載します。  
+
+apache2のインストール  
+
+``` shell
+sudo apt update  
+sudo apt install  apache2  
+```
+
+apache2の起動状態チェック  
+
+``` shell
+systemctl status apache2
+```
+
+「Active:」が緑色で「active(running)」になっている場合は起動しています。  
+起動してない場合は起動しましょう。  
+
+``` shell
+systemctl start apache2
+```
+
+Webページとして公開する場合のディレクトリは以下になります。  
+
+    /var/www/html  
+
+apache2インストール時、そこに「index.html」が自動生成されると思います。  
+無ければ作ります。  
+
+「index.html」が存在する状態で以下のURLへアクセスすると、「It works!」ページか、準備したWebページが表示されます。  
+
+[http://IPADDRESS](http://IPADDRESS)
 
 
 ### Install Java(ex. Java11)
 
 
+
+### Install Certbot
+
+Let's Encryptを用いるので、Certbotを利用します。  
+
+``` shell
+sudo apt update  
+sudo apt install certbot  
+```
+
+## Generate PKCS12 file
+
+「certbot」をインストールしたら、さっそく実行します。  
+
+``` shell
+sudo certbot certonly --standalone
+```
+
+画面指示に従ってドメイン名やメールアドレスを入力します。  
+
+Javaで利用する場合、Keystore形式に変換する必要があります。  
+先ほど作成したファイルを利用して、pkcs12ファイルを作成します。  
+以下のコマンドはサーバー上で実行してください。  
+「<yourdomain.com>」には、証明書発行に使用したドメイン名で読み替えてください。  
+「<path/to/your/dir/>」は出力先ディレクトリパスを指定します。  
+
+``` shell
+sudo openssl pkcs12 -export -in /etc/letsencrypt/live/<yourdomain.com>/fullchain.pem -inkey /etc/letsencrypt/live/<yourdomain.com>/privkey.pem -out <path/to/your/dir/>keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/<yourdomain.com>/chain.pem -caname root
+```
+
+正常に出力されれば、「/path/to/your/dir/keystore.p12」が出力されます。  
+
+## Setup the spring boot
+
+「spring boot」の設定ファイル(application.ymlなど)にSSL証明書の設定を行います。  
+
+``` yaml
+server:
+  port: 443
+  ssl:
+    key-store: /path/to/your/dir/keystore.p12
+    key-store-password: <作成時に設定したPW>
+    key-store-type: PKCS12
+    key-alias: tomcat
+```
+
+「port」はファイアーウォールの設定で開いたポートを設定します。  
+
+## Deploy
+
+設定が出来たらJavaApplicationをビルドしてデプロイします。  
+デプロイが成功したら、サーバーを起動します。  
+ドメインへアクセスし、HTTPS通信が行えることを確認しましょう。  
 
 ## Result
 
