@@ -62,6 +62,14 @@ Proceeding with filter-branch...
 git log --pretty=full
 ```
 
+## コミット
+
+``` shell
+git push -f
+```
+
+内容の反映時は、「-f」を付けてプッシュする必要があるらしい。  
+
 ## 更新後、githubのコミット履歴ページを確認
 Commitsを確認すると、間違っていたユーザー情報が消え、更新後のユーザー情報のみとなっていることが確認出来ます。  
 
