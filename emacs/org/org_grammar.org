@@ -21,7 +21,8 @@ but not any simpler ---Albert Einstein
 
 #+BEGIN_CENTER
 Everything should be made as simple as possible, \\
-but not any simpler
+but not any simpler \\
+OK guys.
 #+END_CENTER
 
 
