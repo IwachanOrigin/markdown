@@ -3,9 +3,13 @@
 #+filetags: :memo:
 -----
 
+** Introduction
+orgで書いた文章をgithubではどの程度まで利用できるか？を調べる為のコード。
+
 ** Paragraphs
 [[https://orgmode.org/manual/Paragraphs.html][manual/Paragraphs]]
 
+verseタグは無視される。この下に、本来はタグで囲まれた文章が表示されるはずだった。
 #+BEGIN_VERSE
  Great clouds overhead
  Tiny black birds rise and fall
@@ -14,11 +18,13 @@
     ---AlexSchroeder
 #+END_VERSE
 
+文章の参照は効く。
 #+BEGIN_QUOTE
 Everything should be made as simple as possible,
 but not any simpler ---Albert Einstein
 #+END_QUOTE
 
+1行目の改行は認識するが、2行目以降の改行は認識しない。「￥」をエスケープしたとされる.
 #+BEGIN_CENTER
 Everything should be made as simple as possible, \\
 but not any simpler \\
