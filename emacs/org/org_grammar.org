@@ -31,4 +31,75 @@ but not any simpler \\
 OK guys.
 #+END_CENTER
 
+** Others
 
+コメント(文の前に#)
+#+begin_src org
+  # comment
+#+end_src
+
+強調(文を*で囲む)
+#+begin_src org
+  *強調*
+#+end_src
+
+斜体(文を/で囲む)
+#+begin_src org
+  /斜体/
+#+end_src
+
+下線(文を_で囲む)
+#+begin_src org
+  _下線_
+#+end_src
+
+取り消し線(文を+で囲む)
+#+begin_src org
+  +取り消し線+
+#+end_src
+
+インラインコード(文を~で囲む)
+#+begin_src org
+  ~インラインコード~
+#+end_src
+
+文字を等幅？にする(文を=で囲む)
+#+begin_src org
+  =等幅にする？=
+#+end_src
+
+見出し(文の前に*とスペース)
+#+begin_src org
+* 見出し
+#+end_src
+
+** リスト要素
+[[https://orgmode.org/manual/Plain-Lists.html#Plain-lists]]
+リストはハイフン、1) など色々ある。
+~M(ESC) - RET~ を押すと、次の項目を追加してくれる。
+#+begin_src org
+  - aaa
+  - bbb
+    - ccc
+    - ddd
+  - eee
+    1) fff
+    2) ggg
+#+end_src
+
+** チェックボックス
+リスト項目の上にカーソルがあれば ~C-u C-c C-c~ でチェックボックスを追加する。
+~M-S(shift)-RET~ でも追加できるらしいが、Windowsでは上手くいかない？
+チェックボックスの上で ~C-c~ を押すと、チェックボックスの切替が出来る。
+チェックボックスの上の項目などで =[/]= とし =C-c= を実行すると、チェックボックスのチェック数などを計算してくれる。
+[%] にすると、パーセンテージで表示してくれる。
+
+- aaa [0/2]
+  - [ ] aaa
+  - [ ] bbb
+- ccc [0%]
+  - [ ] ddd
+  - [ ] eee
+
+: aaa
+: eee
