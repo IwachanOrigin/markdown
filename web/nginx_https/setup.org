@@ -1,0 +1,198 @@
+#+TITLE: NGINX setup
+#+AUTHOR: Yuji Iwanaga
+#+filetags: :memo:setup:
+-----
+
+* 概要
+この手順書にはVPS上でWebサイトをhttps化して公開する際に詰まった部分を手順書として記述する。
+WebアプリケーションはJavaを想定し、リバースプロキシとしてNginxを採用した。
+
+* 手順
+** nginxでのリバースプロキシ設定
+1) nginxのインストール
+   #+begin_src shell
+     sudo apt install nginx -y
+   #+end_src
+
+2) 設定ファイルの追加・編集
+   設定ファイルは分けて作ることをGPTに推奨されたので、新たにapp.confという名称で作成した。
+   今回は内部通信を行う仕様として開発しているため、ある特定のAPIではポート番号を変えて内部通信している。
+
+   #+begin_src shell
+     server {
+         server_name example.com;  # 取得済みドメインに置換
+         
+         location /api/upload/ {
+             proxy_pass         http://127.0.0.1:8081;
+             proxy_set_header   Host              $host;
+             proxy_set_header   X-Forwarded-For   $remote_addr;
+             proxy_set_header   X-Forwarded-Proto https;
+             proxy_http_version 1.1;
+         }
+         
+         location /api/ {
+             proxy_pass         http://127.0.0.1:8080;
+             proxy_set_header   Host              $host;
+             proxy_set_header   X-Forwarded-For   $remote_addr;
+             proxy_set_header   X-Forwarded-Proto https;
+             proxy_http_version 1.1;
+         }
+         
+         location / {
+             proxy_pass         http://127.0.0.1:8080;
+             proxy_http_version 1.1;
+             proxy_set_header   Host              $host;
+             proxy_set_header   X-Real-IP         $remote_addr;
+             proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+         }
+         
+         client_max_body_size 1g;  # ここでは、1GBまでHTTPのbodyサイズはアップロード可能とした
+         location /healthz { return 200 "ok\n"; } # ヘルスチェック用だが、基本いらねぇ
+     }
+   #+end_src
+
+3) 再起動
+   設定が終わったら、nginxは再起動が必要
+   #+begin_src shell
+     sudo systemctl daemon-reload
+     sudo systemctl restart nginx
+     sudo systemctl status nginx
+   #+end_src
+
+** systemdでアプリケーションを自動起動、監視する
+*** 自動起動設定
+1) systemdの設定ファイルをアプリケーション毎に作成する
+   systemdを経由して起動したサービスは環境変数からのパスワード取得が出来ない。
+   別途、パスワードを与えてあげる必要がある。
+   その設定は「EnvironmentFile」で行うが、設定は後述する。
+   起動時の引数に「prod」を設定しているので、別途「application-prod.yml」を作成して置く必要がある。
+   #+begin_src shell
+     # fugafuga.service
+     [Unit]
+     Description=fugafuga
+     After=network-online.target
+
+     [Service]
+     Type=simple
+     User=<user name>
+     WorkingDirectory=/home/<user name>/fugafuga_jar
+     EnvironmentFile=-/etc/fugafuga/fugafuga.env
+     ExecStart=/usr/bin/java -jar /home/<user name>/fugafuga_jar/fugafuga-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --server.port=8080
+     Restart=always
+     RestartSec=5
+     # SIGTERM(143) は正常終了とする
+     SuccessExitStatus=143
+     # 連続クラッシュ抑制
+     StartLimitIntervalSec=60
+     StartLimitBurst=5
+     StandardOutput=append:/var/log/fugafuga/fugafuga.out
+     StandardError=append:/var/log/fugafuga/fugafuga.err
+
+     [Install]
+     WantedBy=multi-user.target
+   #+end_src
+
+   #+begin_src shell
+     # hogehoge.service
+     [Unit]
+     Description=hogehoge
+     After=network-online.target
+
+     [Service]
+     Type=simple
+     User=<user name>
+     WorkingDirectory=/home/<user name>/hogehoge_jar
+     EnvironmentFile=-/etc/hogehoge/hogehoge.env
+     ExecStart=/usr/bin/java -jar /home/<user name>/hogehoge_jar/hogehoge-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --server.port=8081
+     Restart=always
+     RestartSec=5
+     SuccessExitStatus=143
+     StartLimitIntervalSec=60
+     StartLimitBurst=5
+     StandardOutput=append:/var/log/hogehoge/hogehoge.out
+     StandardError=append:/var/log/hogehoge/hogehoge.err
+     
+     [Install]
+     WantedBy=multi-user.target
+   #+end_src
+
+2) EnvironmentFileの設定
+   設定ファイルを記述する。以下の内容をアプリケーション起動時に取得することが出来る。
+   Javaのapplication.yml側で展開するように設定を行う。
+   テキストデータは平文で保存されるため、運用時は取扱いに注意する
+   #+begin_src shell
+     # fugafuga environment file
+     FUGAFUGA_APP_DB_URL=jdbc:mysql://127.0.0.1:3306/fugafuga_db?useSSL=true&serverTimezone=Asia/Tokyo
+     FUGAFUGA_APP_DB_USER=<user name>
+     FUGAFUGA_APP_DB_PASS=<password>
+   #+end_src
+
+3) ファイルの権限を変更する
+   root または 実行アプリユーザーだけがenvファイルを読めるようにする
+   #+begin_src shell
+     sudo chmod 600 /etc/hogehoge/hogehote.env
+     sudo chown root:root /etc/hogehoge/hogehoge.env
+   #+end_src
+
+4) ログファイルのフォルダを作成する
+   サービスファイルに設定したフォルダは自動生成されないので、事前に作成しておく必要がある。
+   #+begin_src
+     sudo mkdir -p /var/log/hogehoge
+     sudo chown root:root /var/log/hogehoge
+     sudo chmod 755 /var/log/hogehoge
+   #+end_src
+
+5) serviceの再起動
+   設定後、サービスを再起動する。
+   #+begin_src shell
+     sudo systemctl daemon-reload
+     sudo systemctl restart fugafuga.service
+     sudo systemctl restart hogehoge.service
+     sudo systemctl status fugafuga
+     sudo systemctl status hogehoge
+   #+end_src
+
+** application.ymlの設定
+設定内容は各環境に依る。
+以下は一例で、いつも読み込むファイルと本番環境でのみ読み込むファイルを記載する。
+開発環境用で分けたい場合は「application-dev.yml」を作成し、起動時の引数に設定する。
+
+application.yml
+#+begin_src yml
+  spring:
+    application:
+      name: hogehoge
+    datasource:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 10
+        connection-timeout: 30000
+    jpa:
+      open-in-view: false
+      hibernate.ddl-auto: none
+      properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+#+end_src
+
+application-prod.yml
+#+begin_src yml
+  spring:
+    datasource:
+      url: ${FUGAFUGA_APP_DB_URL}
+      username: ${FUGAFUGA_APP_DB_USER}
+      password: ${FUGAGUFA_APP_DB_PASS}
+    jpa:
+      show-sql: false
+      hibernate.ddl-auto: none
+
+  server:
+    port: ${SERVER_PORT:8080}
+
+  logging:
+    level:
+      org.springframework: INFO
+      root: INFO
+#+end_src
+
+
+
