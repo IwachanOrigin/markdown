@@ -1,0 +1,193 @@
+#+title: OpenJTalk Build
+#+author: Yuji Iwanaga
+#+filetags: :memo:
+-----
+
+* 概要
+
+* 参考ページ
+[Open JTalkをWindows 11 & Visual Studio 2022用に修正してビルドする (エラー回避)](https://qiita.com/chibibaku/items/c929e7748cfcb650749e)
+
+* ビルド手順
+** Windows
+*** Dependency
+- VisualStudio 2022
+*** 手順
+1) 以下のファイルをダウンロードする
+   [hts_engine_API](https://sourceforge.net/projects/hts-engine/)
+   - hts_engine_API-1.10.tar.gz
+
+   [open_jtalk](https://sourceforge.net/projects/open-jtalk/)
+   - open_jtalk-1.11.tar.gz
+   - open_jtalk_dic_shift_jis-1.10.tar.gz
+   - open_jtalk_dic_utf_8-1.11.tar.gz
+   - hts_voice_nitech_jp_atr503_m001-1.05.tar.gz
+
+   デフォルトではShift-JISしか読み込めない様子だが、ビルド前にmakファイルを修正することでUTF-8にも対応出来るらしい.
+   後述するので、ダウンロード資源には含めておく.
+
+2) hts_engine_APIのビルド
+   hts_engine_APIとはHTS()HMM-based Speech Synthesis System)で生成された音声モデル(HTS Voice / htsvoice)を使って
+   音声波形を生成するための合成エンジンのこと. 要するに、実際に音を生成する部分.
+   OpenJTalkはこのエンジンに依存している.
+   Windowsの場合、nmakeを使ってビルドする.
+
+   1) スタートメニューからVisual Studio 2022 - x64 Native Tools Command Prompt for VS 2022 を起動する
+   2) 先ほどDLしたhts_engine_API-1.10.tar.gzを任意の場所へ解凍し、起動したCMD上で移動する. hts_engine_API-1.10フォルダ直下.
+   3) 以下のコマンドを実行する
+      #+begin_src shell
+        nmake -f Makefile.mak
+        nmake -f Makefile.mak install
+      #+end_src
+
+   4) installまで実行すると以下のフォルダが生成される。
+      c:\hts_engine_API
+
+      OpenJTalkのビルド時、上述フォルダをデフォルトで見に行っている様子。
+      ビルドが完了するまで移動しない.
+
+   5) OpenJTalk のソースコードを修正する
+      std::binary_function を利用している箇所があるらしい。c++17で削除されたので、修正が必要。
+      対象は以下のソースコード
+      OpenJTalk\open_jtalk-1.11\mecab\src\dictionary.cpp
+      #+begin_src C
+        // 修正前
+        template <typename T1, typename T2>
+          struct pair_1st_cmp: public std::binary_function<bool, T1, T2> {
+          bool operator()(const std::pair<T1, T2> &x1,
+                          const std::pair<T1, T2> &x2)  {
+            return x1.first < x2.first;
+          }
+        };
+      #+end_src
+      #+begin_src C
+        // 修正後
+        template <typename T1, typename T2>
+          struct pair_1st_cmp {
+            bool operator()(const std::pair<T1, T2> &x1,
+                            const std::pair<T1, T2> &x2) const {
+              return x1.first < x2.first;
+            }
+          };
+      #+end_src
+
+   6) mecab-naist-jdicのMakefile.makのターゲットを書き換える
+      理由は良くわからないが、「_」を付けたファイルが格納されているため、それを使うように変更する様子。
+      open_jtalk-1.11.tar\open_jtalk-1.11\mecab-naist-jdic\Makefile.mak
+      #+begin_src makefile
+        # 修正前
+        char.bin matrix.bin sys.dic unk.dic: naist-jdic.csv matrix.def left-id.def pos-id.def rewrite.def right-id.def char.def unk.def feature.def
+        ..\mecab\src\mecab-dict-index.exe -d . -o . -f UTF-8 -t sjis
+      #+end_src
+      #+begin_src makefile
+        # 修正後
+        char.bin matrix.bin sys.dic unk.dic: naist-jdic.csv matrix.def _left-id.def _pos-id.def _rewrite.def _right-id.def char.def unk.def feature.def
+        ..\mecab\src\mecab-dict-index.exe -d . -o . -f UTF-8 -t sjis
+      #+end_src
+
+      改行して2行になっていることに気を付ける
+
+   7) open_jtalkのMakefile.makのinstallのターゲットを書き換える
+      項目6と同じ。「_」を付けてあげる必要がある。
+      open_jtalk-1.11\Makefile.mak
+      #+begin_src makefile
+        # 修正前
+        copy left-id.def $(INSTALLDIR)\dic
+        copy right-id.def $(INSTALLDIR)\dic
+        copy rewrite.def $(INSTALLDIR)\dic
+        copy pos-id.def $(INSTALLDIR)\dic
+      #+end_src
+      #+begin_src makefile
+        # 修正後
+        copy _left-id.def $(INSTALLDIR)\dic
+        copy _right-id.def $(INSTALLDIR)\dic
+        copy _rewrite.def $(INSTALLDIR)\dic
+        copy _pos-id.def $(INSTALLDIR)\dic
+      #+end_src
+
+      修正箇所はcopy処理なので、最後の方にある
+
+   8) Open JTalkをビルドする
+      準備が出来たのでビルドを行う。
+      open_jtalk-1.11を解凍した任意のフォルダへ移動し、以下のコマンドを実行する。
+      #+begin_src shell
+        nmake -f Makefile.mak
+        nmake -f Makefile.mak install
+      #+end_src
+
+   9) 以下のフォルダが生成さえるので、任意の場所へ移動する
+      C:\hts_engine_API
+      C:\open_jtalk
+
+   10) 辞書ファイルを配置し、リネームする
+       open_jtalkフォルダ直下に「dic」フォルダが存在する。
+       そのフォルダを同階層の「bin」内へ移動する。
+       そして、「_」を付けてコピーしたファイルの「_」を削除する。
+       #+begin_src shell
+         # 変更前
+         open_jtalk
+         ├─bin
+         │   open_jtalk.exe
+         └─dic
+             char.bin
+             matrix.bin
+             sys.dic
+             unk.dic
+             _left-id.def
+             _pos-id.def
+             _rewrite.def
+             _right-id.def
+       #+end_src
+       #+begin_src shell
+         # 変更後
+         open_jtalk
+         └─bin
+         │  open_jtalk.exe
+         └─dic
+            char.bin
+            left-id.def
+            matrix.bin
+            pos-id.def
+            rewrite.def
+            right-id.def
+            sys.dic
+            unk.dic
+       #+end_src
+
+   11) voiceデータを配置する
+       open_jtalk\bin 直下を以下のように変更する
+       #+begin_src shell
+         open_jtalk\bin
+         |
+         |   open_jtalk.exe
+         |   output.wav
+         |   readme.md
+         |
+         +---dic
+         |       char.bin
+         |       left-id.def
+         |       matrix.bin
+         |       pos-id.def
+         |       rewrite.def
+         |       right-id.def
+         |       sys.dic
+         |       unk.dic
+         |
+         \---voices
+             COPYING
+             INSTALL
+             nitech_jp_atr503_m001.htsvoice
+             README
+       #+end_src
+       voicesフォルダを作成し、DLしてきた「hts_voice_nitech_jp_atr503_m001-1.05」の中身をまるっとコピーする
+
+   12) 実行する
+       以下のような感じで実行する
+       #+begin_src shell
+         .\open_jtalk.exe -m .\voices\[ボイスデータ名].htsvoice -x dic -ow output.wav .\input.txt
+       #+end_src
+
+       Shift-JISの状態でビルドを行った場合、「input.txt」はShift-JISにしないと日本語が文字化けして読み込まれる。
+       文字化けしたデータを読み上げてしまうので注意すること。
+
+       
