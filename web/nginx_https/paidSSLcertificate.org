@@ -1,0 +1,183 @@
+#+title: 有償SSL証明書をVPSサーバへ適用する方法
+#+author: Yuji Iwanaga
+#+filetags: :memo:ssl:手順書:
+-----
+
+* 概要
+タイトルの通り、有償SSL証明書をVPSサーバへ適用する方法について記載する。
+
+* 何故、有償SSL証明書が必要なのか？
+通常、Let's Encryptのような無償SSL証明書で十分なのだが、ある特定の組み込みWebブラウザでは有償SSL証明書でないと
+そもそも証明書の認証に失敗してしまう場合があった。
+購入したSSL証明書もドメイン認証のもので、無償SSLと何が違うのかははっきりとしないのだが、有償版では問題なく認証できた。
+深くは追求せず、端末によってはそういうこともあると勝手に納得することにした。時間の無駄だからである。
+
+* 前提条件
+以下の前提条件で環境を構築する。
+- VPS
+  - さくらのVPS, Ubuntu 24.04
+- リバースプロキシ
+  - nginx
+- ドメイン
+  - example.com
+- SSL発行ソフトウェア
+  - openssl
+
+* 実施手順
+** 秘密鍵の作成
+1) Ubuntu上で秘密鍵を格納するフォルダを作成する
+   #+begin_src shell
+     sudo mkdir -p /etc/nginx/ssl/example.com
+     sudo chmod 700 /etc/nginx/ssl/example.com
+   #+end_src
+
+2) 秘密鍵の作成
+   CSRの作成に必要な鍵だが、各認証局のページに作成方法が基本あるようだ。
+   そちらを確認し、暗号強度を随時設定する必要がある。
+   [[https://knowledge.digicert.com/jp/tutorials/how-to-create-csr][digicertのページ]]
+   [[https://knowledge.digicert.com/jp/tutorials/generating-a-csr-on-apache-using-openssl][apache2/openssl]]
+   上述はdigicertのページだが、ここでは「2048」にしなさいという記述がある。
+   #+begin_src shell
+     sudo openssl genrsa -des3 -out /etc/nginx/ssl/example.com/private.key 2048
+     sudo chmod 600 /etc/nginx/ssl/example.com/private.key
+   #+end_src
+   パスフレーズの設定有無に関しては、必須な場合は設定を行う。
+   後ほど出てくるが、nginxのサービス起動時にもパスフレーズを入力する必要が出てしまう。
+   そのあたりが煩わしかったり、運用上問題ない人はパスフレーズに空文字を設定しても良いかもしれない。
+   GPT曰く、空文字で運用することは一般的だという話だが、昨今はセキュリティが脅かされるニュースが多い。
+   それらを鑑みるとパスフレーズは設定すべきであると思う。
+
+3) CSRの作成
+   #+begin_src shell
+     openssl req -new -key /etc/nginx/ssl/example.com/private.key -out server.csr
+   #+end_src
+   生成時、パスフレーズの入力が求められるので、先ほど設定したパスを入力する。
+   その後、いくつかの入力項目が現れる。そのあたりも設定していく。
+   先ほどの発行手順ページに入力項目内容があるので、参照する。
+   このページでの必須入力項目は以下の通り。
+   #+begin_src org
+     Country Name (2 letter code) [AU]:JP
+     State or Province Name (full name) []:Tokyo
+     Locality Name (eg, city) []:Chuo-Ku
+     Organization Name (eg, company) []:Sample K.K.
+     Organizational Unit Name (eg, section) []:Web Sales Dept.
+     Common Name (eg, YOUR name) []:example.com
+   #+end_src
+   以下の項目は空文字で問題ないらしい。発行元によるので注意。
+   #+begin_src org
+     Email Address []:
+     A challenge password []:
+     An optional company name []
+   #+end_src
+   以上の手順でCSRが発行される。
+   ここでは「server.csr」という名前になる。
+
+4) 秘密鍵のバックアップ
+   秘密鍵が消えてしまった場合、SSL証明書の復旧は出来ない様子なので、バックアップとしてどこかへ退避しておく。
+
+5) SSL証明書の購入
+   [[https://ssl.sakura.ad.jp/][さくらのSSL]]
+   このへんでSSL証明書を購入する。
+   [[https://qiita.com/yoshizaki_91/items/e6f39a5bfb99900b44b2][Qiita記事]]
+   ページのスクリーンショットは無いので、上記リンクの手順などを参考にする。
+   画面は古いのだが、あまり大きな違いは無い。
+   申し込み前にCSRの中身を貼り付け、登録情報が正しいことを確認してから発行依頼を出すことになる。
+
+6) サーバ認証
+   認証局は、CSR上で登録したドメインが本当に存在しているか、確認を行ってからSSL証明書の発行を行う。
+   「○○というファイルをWebサーバ上で見えるようにしろ」という内容のメールが届くので、その対応を行う。
+   具体的には以下画像のような形で配置し、外部から見えるようにする必要がある。
+   [[file:images/01_certification_file.png]]
+
+7) 証明書一式の取得
+   サーバ認証が成功すると、発行した旨のメールが届き、サーバ証明書をダウンロードできるようになる。
+   サーバ証明書とは別に中間証明書なるファイルが存在し、そちらもダウンロードしてVPSへ持っていく必要がある。
+   さくらインターネットでは以下ページからダウンロードできるようになっている(※ラピッドSSL/クイックSSLプレミアムの場合)
+   [[https://help.sakura.ad.jp/ssl/2333/][https://help.sakura.ad.jp/ssl/2333/]]
+   [[file:images/02_certification_file.png]]
+
+   ダウンロードした証明書一式をVPSへ持っていく。
+
+8) nginx用にfullchainファイルを作成する
+   nginxで利用する場合はfullchain.pemへまとめる必要があるらしい。
+   サーバ証明書 -> 中間証明書の順番でファイルの内容を連結する。
+   #+begin_src shell
+     sudo mv example.com.crt /etc/nginx/ssl/example.com/example.com.crt
+     sudo mv intermediate.crt /etc/nginx/ssl/example.com/intermediate.crt
+     sudo cat /etc/nginx/ssl/example.com/example.com.crt /etc/nginx/ssl/example.com/intermediate.crt > /etc/nginx/ssl/example.com/fullchain.pem
+     sudo chmod 644 /etc/nginx/ssl/example.com/fullchain.pem
+   #+end_src
+
+9) nginx側で発行したSSL証明書を利用できるように設定を行う
+   例えば以下のように、sites-availableに追加の設定を行う
+   #+begin_src shell
+     sudo emacs -nw /etc/nginx/sites-available/example.com.conf
+   #+end_src
+
+   #+begin_src yml
+     server {
+       listen 443 ssl http2;
+       server_name example.com www.example.com;  # 取得済みドメインに置換
+     
+       ssl_certificate     /etc/nginx/ssl/example.com/fullchain.pem;
+       ssl_certificate_key /etc/nginx/ssl/example.com/private.key;
+     
+       ssl_protocols TLSv1.2 TLSv1.3;
+     
+       client_max_body_size 1g;
+     
+       access_log /var/log/nginx/tls_access.log tlslog;
+     
+      location / {
+        proxy_pass         http://127.0.0.1:8080;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto https;
+        proxy_http_version 1.1;
+      }
+     
+      location /ws/ {
+        proxy_pass         http://127.0.0.1:8080;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+     
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto https;
+     
+        proxy_read_timeout 600s;
+     
+        proxy_http_version 1.1;
+      }
+   }
+   #+end_src
+
+   上記ではWebSocketの処理についても記述している。
+
+10) もし、秘密鍵にワンフレーズパスを設定している場合、以下のように秘密鍵のパスフレーズを記載したファイルを作成し、読み込みできるようにする
+    serverの項目内に記述すればOK
+    #+begin_src shell
+      server {
+        ssl_password_file   /etc/nginx/ssl/example.com/ssl.pass;
+      }
+    #+end_src
+
+11) 続いて、先ほどの設定ファイルをアクティブにするため、nginxの「sites-enabled」へのシンボリックリンクを設定する
+    #+begin_src shell
+      sudo ln -sfn /etc/nginx/sites-available/example.com.conf /etc/nginx/sites-enabled/example.com.conf
+    #+end_src
+
+12) nginxの設定ファイル読み込み検証コマンドで作成したファイルの内容を検証する
+    #+begin_src shell
+      sudo nginx -t
+    #+end_src
+    読み込みエラーがある場合、修正を行う。無ければOK
+
+13) nginxの再起動を行う
+    #+begin_src shell
+      sudo systemctl reload nginx
+    #+end_src
+
+
