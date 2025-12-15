@@ -34,13 +34,17 @@
 2) 秘密鍵の作成
    CSRの作成に必要な鍵だが、各認証局のページに作成方法が基本あるようだ。
    そちらを確認し、暗号強度を随時設定する必要がある。
+   digicertのページでは、「2048」にしなさいという記述がある。
+   
    [[https://knowledge.digicert.com/jp/tutorials/how-to-create-csr][digicertのページ]]
+   
    [[https://knowledge.digicert.com/jp/tutorials/generating-a-csr-on-apache-using-openssl][apache2/openssl]]
-   上述はdigicertのページだが、ここでは「2048」にしなさいという記述がある。
+   
    #+begin_src shell
      sudo openssl genrsa -des3 -out /etc/nginx/ssl/example.com/private.key 2048
      sudo chmod 600 /etc/nginx/ssl/example.com/private.key
    #+end_src
+
    パスフレーズの設定有無に関しては、必須な場合は設定を行う。
    後ほど出てくるが、nginxのサービス起動時にもパスフレーズを入力する必要が出てしまう。
    そのあたりが煩わしかったり、運用上問題ない人はパスフレーズに空文字を設定しても良いかもしれない。
@@ -51,6 +55,7 @@
    #+begin_src shell
      openssl req -new -key /etc/nginx/ssl/example.com/private.key -out server.csr
    #+end_src
+
    生成時、パスフレーズの入力が求められるので、先ほど設定したパスを入力する。
    その後、いくつかの入力項目が現れる。そのあたりも設定していく。
    先ほどの発行手順ページに入力項目内容があるので、参照する。
@@ -63,12 +68,14 @@
      Organizational Unit Name (eg, section) []:Web Sales Dept.
      Common Name (eg, YOUR name) []:example.com
    #+end_src
+
    以下の項目は空文字で問題ないらしい。発行元によるので注意。
    #+begin_src org
      Email Address []:
      A challenge password []:
      An optional company name []
    #+end_src
+
    以上の手順でCSRが発行される。
    ここでは「server.csr」という名前になる。
 
@@ -77,8 +84,11 @@
 
 5) SSL証明書の購入
    [[https://ssl.sakura.ad.jp/][さくらのSSL]]
+
    このへんでSSL証明書を購入する。
+   
    [[https://qiita.com/yoshizaki_91/items/e6f39a5bfb99900b44b2][Qiita記事]]
+
    ページのスクリーンショットは無いので、上記リンクの手順などを参考にする。
    画面は古いのだが、あまり大きな違いは無い。
    申し込み前にCSRの中身を貼り付け、登録情報が正しいことを確認してから発行依頼を出すことになる。
@@ -87,13 +97,16 @@
    認証局は、CSR上で登録したドメインが本当に存在しているか、確認を行ってからSSL証明書の発行を行う。
    「○○というファイルをWebサーバ上で見えるようにしろ」という内容のメールが届くので、その対応を行う。
    具体的には以下画像のような形で配置し、外部から見えるようにする必要がある。
+   
    [[file:images/01_certification_file.png]]
 
 7) 証明書一式の取得
    サーバ認証が成功すると、発行した旨のメールが届き、サーバ証明書をダウンロードできるようになる。
    サーバ証明書とは別に中間証明書なるファイルが存在し、そちらもダウンロードしてVPSへ持っていく必要がある。
    さくらインターネットでは以下ページからダウンロードできるようになっている(※ラピッドSSL/クイックSSLプレミアムの場合)
+   
    [[https://help.sakura.ad.jp/ssl/2333/][https://help.sakura.ad.jp/ssl/2333/]]
+   
    [[file:images/02_certification_file.png]]
 
    ダウンロードした証明書一式をVPSへ持っていく。
