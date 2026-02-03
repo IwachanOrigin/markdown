@@ -1,0 +1,70 @@
+#+TITLE: cmigemo msys2 setup
+#+AUTHOR: Yuji Iwanaga
+#+filetags: :memo:setup:
+-----
+
+* 概要
+MSYS2へCMigemoをインストールするための手順をまとめる。
+いろんなWebサイトに書いてある方法ではビルドがうまく行かなかった。
+
+* 手順
+** cmigemoインストール手順
+1) nkfのダウンロード
+   任意のフォルダを作成し、nkfの最新バージョンをインストールする。
+   OSDN上のURLは2026/02現在、参照できなくなっている。
+   #+begin_src shell
+     wget https://ftp.jaist.ac.jp/pub/sourceforge.jp/nkf/70406/nkf-2.1.5.tar.gz
+   #+end_src
+
+2) nkfのビルドとインストール
+   #+begin_src shell
+     tar xvf nkf-2.1.5.tar.gz
+     cd nkf-2.1.5
+     make
+     make install
+     # インストールされた 日本語 man を, utf-8 へ変換
+     nkf --overwrite -w /usr/local/man/ja/man1/nkf.1
+   #+end_src
+
+3) cmigemoのダウンロード
+   任意のフォルダへダウンロードする。
+   #+begin_src shell
+     git clone https://github.com/koron/cmigemo
+     cd cmigemo
+   #+end_src
+
+4) Make-mingw.makを修正する
+   libmigemo.dll.aが生成されず、exeファイルの生成に失敗するので、以下を変更する。
+
+   変更前
+   #+begin_src shell
+     dllwrap -o $(libmigemo_DSO) --dllname $(DLLNAME) --implib $(libmigemo_LIB) --def $(srcdir)migemo.def $(libmigemo_OBJ)
+   #+end_src
+
+   変更後
+   #+begin_src shell
+     $(libmigemo_DSO): $(libmigemo_OBJ) $(srcdir)migemo.def
+     $(CC) -shared -o $(libmigemo_DSO) $(libmigemo_OBJ) \
+           -Wl,--out-implib=$(libmigemo_LIB) \
+           -Wl,--export-all-symbols \
+           -Wl,--enable-auto-import
+   #+end_src
+
+5) ビルドが出来るかチェックする
+
+   #+begin_src shell
+     make mingw-clean
+     make mingw-rel V=1
+   #+end_src
+
+6) インストールする
+
+   #+begin_src shell
+     make mingw-clean
+     make mingw-install
+   #+end_src
+
+   もし、iconvが無いなどのエラーが出る場合はpacmanなどでインストールし、再度実行する。
+
+
+
