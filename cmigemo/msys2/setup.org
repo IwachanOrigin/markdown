@@ -38,6 +38,7 @@ MSYS2へCMigemoをインストールするための手順をまとめる。
 
    変更前
    #+begin_src shell
+     $(libmigemo_DSO): $(libmigemo_OBJ) $(srcdir)migemo.def
      dllwrap -o $(libmigemo_DSO) --dllname $(DLLNAME) --implib $(libmigemo_LIB) --def $(srcdir)migemo.def $(libmigemo_OBJ)
    #+end_src
 
@@ -53,6 +54,7 @@ MSYS2へCMigemoをインストールするための手順をまとめる。
 5) ビルドが出来るかチェックする
 
    #+begin_src shell
+     ./configure --prefix=/usr/local
      make mingw-clean
      make mingw-rel V=1
    #+end_src
@@ -60,6 +62,7 @@ MSYS2へCMigemoをインストールするための手順をまとめる。
 6) インストールする
 
    #+begin_src shell
+     ./configure --prefix=/usr/local
      make mingw-clean
      make mingw-install
    #+end_src
