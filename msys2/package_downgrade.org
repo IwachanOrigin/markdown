@@ -29,11 +29,13 @@ UCRT64を使います
      pacman -U mingw-w64-ucrt-x86_64-libtree-sitter-0.25.6-2-any.pkg.tar.zst
    #+end_src
 
-5) 必要であればパッケージの自動アップデートを防止します。
-   不具合対応などでダウングレードしている場合に便利です。
+   5) 必要であればパッケージの自動アップデートを防止します。
+      不具合対応などでダウングレードしている場合に便利です。
 
-   インストール先(software/msys2など)直下の以下を開きます。
-   /etc/pacman.conf
+      インストール先(software/msys2など)直下の以下を開きます。
+      #+begin_src
+        /etc/pacman.conf
+      #+end_src
 
    以下のような記述を追記します。
    #+begin_src
@@ -48,4 +50,3 @@ UCRT64を使います
      警告: mingw-w64-ucrt-x86_64-libtree-sitter: パッケージの更新を無視 (1~0.25.10-3 => 1~0.26.7-2)
      依存関係を解決しています...
    #+end_src
-
