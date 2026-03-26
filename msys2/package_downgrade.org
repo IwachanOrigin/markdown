@@ -1,0 +1,51 @@
+#+title: Package Downgrade
+#+author: Yuji Iwanaga
+#+date: <2026-03-26 Thu>
+#+filetags: :memo:
+-----
+
+* 概要
+MSYS2で特定パッケージをダウングレードして利用する方法
+
+* 参考ページ
+[MSYS2でパッケージをダウングレードする](https://qiita.com/ktgw0316/items/2c14b17767f29f6a76b5)
+
+* 前提条件
+UCRT64を使います
+
+* ダウングレード手順
+1) 以下のURLへアクセスし、対象のパッケージが存在するか確認します。
+   [Index of /mingw/ucrt64/](https://repo.msys2.org/mingw/ucrt64/)
+   たくさんパッケージがあるので「tree-sitter」などで該当するパッケージを検索します。
+
+2) 対象のパッケージの任意のフォルダへダウンロードします。
+   対象リンクをクリックするとダウンロードされます。
+
+3) ダウンロードしてきたパッケージファイル(mingw-w64-ucrt-x86_64-libtree-sitter-0.25.6-2-any.pkg.tar.zst etc)が配置されているフォルダへ
+   MSYS2 UCRT64で移動します。
+
+4) 以下のようなコマンドでインストールします
+   #+begin_src shell
+     pacman -U mingw-w64-ucrt-x86_64-libtree-sitter-0.25.6-2-any.pkg.tar.zst
+   #+end_src
+
+5) 必要であればパッケージの自動アップデートを防止します。
+   不具合対応などでダウングレードしている場合に便利です。
+
+   インストール先(software/msys2など)直下の以下を開きます。
+   /etc/pacman.conf
+
+   以下のような記述を追記します。
+   #+begin_src
+     # Pacman won't upgrade packages listed in IgnorePkg and members of
+     IgnorePkg   = mingw-w64-ucrt-x86_64-libtree-sitter
+   #+end_src
+
+   MSYS2 UCRT64を再起動することで有効になります。
+   以降、pacman -Syu を実行するたびに以下のメッセージも出るようになります。
+   #+begin_src
+     :: システム全体の更新を開始...
+     警告: mingw-w64-ucrt-x86_64-libtree-sitter: パッケージの更新を無視 (1~0.25.10-3 => 1~0.26.7-2)
+     依存関係を解決しています...
+   #+end_src
+
