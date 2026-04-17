@@ -1,0 +1,159 @@
+#+TITLE: VPS Web Service setup
+#+AUTHOR: Yuji Iwanaga
+#+filetags: :memo:setup:
+-----
+* 概要
+WebアプリケーションをVPSで構築して公開する手順をまとめる
+
+* システム構成
+Java
+Spring Boot
+MySQL
+Ubuntu Server
+
+* VPS
+さくらのVPS
+
+* 参考
+https://qiita.com/Zuru_GG/items/8f3e535c81f75bc5d6f1
+
+* 手順
+ルートユーザーの追加など、初回ログイン関連は対応済みとする
+
+** パッケージの更新
+#+begin_src shell
+  sudo apt update && sudo apt upgrade -y
+#+end_src
+
+** 必要なソフトウェアのインストール
+JavaとNginxをインストールする. 
+#+begin_src shell
+  sudo apt install -y openjdk-21-jre nginx
+#+end_src
+MySQLは最新バージョンをwgetなどして持ってくる
+#+begin_src shell
+#+end_src
+*** バージョンチェック
+#+begin_src shell
+  java -version
+  nginx -v
+#+end_src
+
+#+begin_quote
+openjdk version "21.0.10" 2026-01-20 LTS
+OpenJDK Runtime Environment Temurin-21.0.10+7 (build 21.0.10+7-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.10+7 (build 21.0.10+7-LTS, mixed mode, sharing)
+nginx version: nginx/1.24.0 (Ubuntu)
+#+end_quote
+
+** サービス専用のログイン不要ユーザーとグループを作成する
+sshログインができないユーザーを作成することが目的
+#+begin_src shell
+  sudo addgroup --system <App Name>
+#+end_src
+#+begin_src shell
+  sudo adduser --system \
+       --ingroup <App Name> \
+       --shell /usr/sbin/nologin \
+       <App Name>
+#+end_src
+
+** アプリケーション配置先を作成
+/opt直下に作ることが多い？
+#+begin_src shell
+  sudo mkdir -p /opt/<App Name>
+#+end_src
+
+** アプリケーション用ログ配置先を作成
+#+begin_src shell
+  sudo mkdir -p /var/log/<App Name>
+#+end_src
+
+** ディレクトリの所有権を変更
+#+begin_src shell
+  sudo chown -R <App Name>:<App Name> /opt/<App Name>
+  sudo chown -R <App Name>:<App Name> /var/log/<App Name>
+#+end_src
+
+** ディレクトリの権限を変更
+#+begin_src shell
+  sudo chmod 755 /opt/<App Name>
+  sudo chmod 755 /var/log/<App Name>
+#+end_src
+
+** MySQL DBを作成する
+*** ルートユーザーでログインし、アプリ用のユーザーを作成
+パスワード入力が求められたら入力
+#+begin_src shell
+  mysql -u root -p
+#+end_src
+ユーザーを作成(localhost)
+#+begin_src sql
+  CREATE USER '<App Name>'@'localhost' IDENTIFIED BY 'strong_password';
+  GRANT ALL PRIVILEGES ON <DB NAME>.* TO '<App Name>'@'localhost';
+  FLUSH PRIVILEGES;
+#+end_src
+ユーザーを作成(127.0.0.1). TCP通信が必要な場合、IP指定でアカウントが必要らしい. 
+#+begin_src sql
+  CREATE USER '<App Name>'@127.0.0.1' IDENTIFIED BY 'strong_password';
+  GRANT ALL PRIVILEGES ON <DB NAME>.* TO '<App Name>'@127.0.0.1';
+  FLUSH PRIVILEGES;
+#+end_src
+ユーザーを作成したら「exit」で抜ける
+*** テーブルを作成し、初期投入データも入れる
+SQLファイルを作っておき、サーバ側で実行するのが良い. ルートユーザーがDB作成など行うので、パスワードはルートユーザーのものを利用する
+#+begin_src shell
+  mysql -u root -p <DB Name> < /path/to/sqlfile.sql
+#+end_src
+
+** 環境変数を定義する
+spring bootの定義ファイルへパスワードなどをべた書きすることはダメらしいので設定ファイル(Environment file)に書く
+#+begin_quote
+ファイルの場所
+/etc/<App Name>/<App Name>.env
+#+end_quote
+以下のような内容
+#+begin_src shell
+  MYSQL_LOGIN_USER=user
+  MYSQL_LOGIN_PASSWORD=password
+#+end_src
+
+** systemdサービスを定義する
+再起動やログの出力先定義などを行う. 
+#+begin_quote
+ファイルの場所
+/etc/systemd/system/<サービス名>.service
+#+end_quote
+以下のような内容にする
+#+begin_quote
+# <サービス名>.service
+[Unit]
+Description=<説明>
+After=network-online.target
+Wants=network-online.target
+# 連続クラッシュ抑制
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=<ユーザー名>
+Group=<グループ名>
+WorkingDirectory=/path/to/app_dir
+EnvironmentFile=-/path/to/env/file.env
+ExecStart=/usr/bin/java -jar /path/to/app dir/app_name.jar --spring.profiles.active=prod --server.port=8080
+Restart=always
+RestartSec=5
+# SIGTERM(143) は正常終了とする
+SuccessExitStatus=143
+ReadWritePaths=/path/to/app_log_dir/
+TimeoutStopSec=30s
+LimitNOFILE=65536
+StandardOutput=append:/path/to/app_log_dir/app_name.out
+StandardError=append:/path/to/app_log_dir/app_name.err
+
+[Install]
+WantedBy=multi-user.target
+#+end_quote
+
+** 
