@@ -1,0 +1,45 @@
+#+title: Ubuntu development enviroment setup manual
+#+author: Yuji Iwanaga
+#+date: <2026-04-20 Mon>
+#+filetags: :memo:manual:
+-----
+* 概要
+毎回、セットアップが発生するたびに調べているので、設定方法をまとめておく。
+
+* 依存
+Ubuntu/Debian系OS
+
+* 注意
+Ubuntu/Debian系ではないOSの場合は、別途調査すること\\
+(Fedora, Archなど)
+
+
+* セットアップ手順
+1. パッケージの更新
+   #+begin_src shell
+     sudo apt update && sudo apt upgrade -y
+   #+end_src
+
+2. 関連するパッケージにインストール
+   開発関連とffmpeg開発用パッケージにインストール
+   #+begin_src shell
+     sudo apt install \
+          build-essential git gdb pkg-config cmake ninja-build
+   #+end_src
+3. ffmpegのインストール
+   #+begin_src shell
+     sudo apt install \
+          ffmpeg \
+          libavcodec-dev libavformat-dev libavutil-dev \
+          libswscale-dev libswresample-dev
+   #+end_src
+
+4. webview コンパイル用のパッケージインストール
+   #+begin_src shell
+     sudo apt install libgtk-3-dev libwebkit2gtk-4.1-dev
+   #+end_src
+
+5. boost のインストール
+   #+begin_src shell
+     sudo apt install libboost-all-dev
+   #+end_src
